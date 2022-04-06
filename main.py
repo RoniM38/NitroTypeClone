@@ -75,7 +75,7 @@ def main():
     sentence_box = TextBox(window, WHITE, TEXTBOX_BG, 300, 0, 500, 250, sentence, 20, WHITE)
 
     # time waited between each number in the countdown
-    wait_time = 1000
+    wait_time = 850
     start = pygame.time.get_ticks()
     countdown_list = ["3", "2", "1", "GO"]
     countdown_index = 0
@@ -83,6 +83,9 @@ def main():
 
     countdown_sound = pygame.mixer.Sound("Mario Kart Race Countdown - Sound Effect.mp3")
     countdown_sound.play()
+
+    quit_button = Button(window, "Quit", RED, WHITE, 10, 10, 100, 40)
+
     run = True
     while run:
         for event in pygame.event.get():
@@ -90,18 +93,21 @@ def main():
                 run = False
 
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_q:
+                if not countdown:
+                    sentence_box.letter_typed(event.key)
+
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if quit_button.rect.collidepoint(event.pos):
                     countdown_sound.stop()
                     menu()
-                else:
-                    if not countdown:
-                        sentence_box.letter_typed(event.key)
 
         window.fill(SKY_BLUE)
         background.scroll()
         background.draw()
 
         clock.tick(60)
+
+        quit_button.draw()
 
         car.draw()
         sentence_box.draw()
@@ -129,7 +135,7 @@ def main():
 
 
 def menu():
-    play_button = Button(window, "Play!", RED, WHITE, 420, 430, 200, 80)
+    play_button = Button(window, "Play!", RED, WHITE, 420, 430, 150, 60)
 
     run = True
     while run:

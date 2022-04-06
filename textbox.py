@@ -32,7 +32,6 @@ class TextBox:
         x = self.x + self.font_size
         y = self.y + self.font_size
         for i, word in enumerate(sentence_list):
-            word_index = range(self.sentence.index(word), self.sentence.index(word)+len(word))
             word_label = self.font.render(word, True, self.font_color)
 
             if x + word_label.get_width() >= self.x + self.width:
@@ -40,7 +39,8 @@ class TextBox:
                 x = self.x + self.font_size
 
             for i_c, c in enumerate(word):
-                if self.char_index in word_index and i + i_c == self.char_index:
+                word_i = self.sentence.index(word) + i_c
+                if word_i == self.char_index and self.sentence[self.char_index] == c:
                     c_label = self.font.render(c, True, self.highlight_color)
                 else:
                     c_label = self.font.render(c, True, self.font_color)
@@ -48,8 +48,6 @@ class TextBox:
                 self.surface.blit(c_label, (x, y))
 
                 x += c_label.get_width()
-            if self.sentence[self.char_index] == " " and i + len(word) == self.char_index:
-                pygame.draw.rect(self.surface, self.highlight_color, (x, y+10, 5, 10))
             x += 5
 
     def letter_typed(self, key):
@@ -58,11 +56,14 @@ class TextBox:
         try:
             letter = chr(key)
 
-            if (letter.isalpha() or letter == " ") and letter == self.sentence[self.char_index]:
-                if self.char_index < len(self.sentence):
-                    self.highlight_color = CORRECT_CHAR
-                    self.char_index += 1
-            else:
-                self.highlight_color = WRONG_CHAR
+            if self.char_index < len(self.sentence) - 1:
+                if (letter.isalpha() or letter == " ") and letter == self.sentence[self.char_index]:
+                    if self.char_index < len(self.sentence):
+                        self.highlight_color = CORRECT_CHAR
+                        self.char_index += 1
+                else:
+                    self.highlight_color = WRONG_CHAR
+            elif self.char_index == len(self.sentence) - 1:
+                self.char_index += 1
         except ValueError:
             pass
