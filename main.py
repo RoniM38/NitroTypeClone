@@ -61,6 +61,8 @@ def quit_game():
 def main():
     car = Car(window, car_img, 390, 330)
 
+    clock = pygame.time.Clock()
+
     scrollSpeed = 0
     background = BackGround(window, 0, WINDOW_SIZE[1]-road.get_height()+5, scrollSpeed, road)
 
@@ -98,6 +100,8 @@ def main():
         window.fill(SKY_BLUE)
         background.scroll()
         background.draw()
+
+        clock.tick(60)
 
         car.draw()
         sentence_box.draw()
