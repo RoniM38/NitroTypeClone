@@ -20,18 +20,18 @@ RED = "#f82a36"
 GREEN = "#00bb77"
 
 # Road Image
-road = pygame.image.load("../Images/road.png")
+road = pygame.image.load("Images/road.png")
 original_size = road.get_size()
 scale = WINDOW_SIZE[0]//original_size[0]
 road = pygame.transform.scale(road, (WINDOW_SIZE[0], original_size[1] * scale))
 
-results_bg = pygame.transform.scale(pygame.image.load("../Images/race_bg.png"), WINDOW_SIZE)
+results_bg = pygame.transform.scale(pygame.image.load("Images/race_bg.png"), WINDOW_SIZE)
 
 # Car Image
-car_img = pygame.image.load("../Images/car.png")
+car_img = pygame.image.load("Images/car.png")
 
 # game logo
-logo = pygame.image.load("../Images/NitroTypeLogo.png")
+logo = pygame.image.load("Images/NitroTypeLogo.png")
 
 countdown_font = pygame.font.SysFont("Franklin Gothic Heavy", 150)
 
@@ -68,7 +68,7 @@ def main():
 
     background = BackGround(window, 0, WINDOW_SIZE[1]-road.get_height()+5, 0, road)
 
-    with open("../words.txt", "r") as f:
+    with open("words.txt", "r") as f:
         content = f.readlines()
 
     num_words = random.randint(10, 50)
@@ -86,10 +86,13 @@ def main():
     countdown_index = 0
     countdown = True
 
-    countdown_sound = pygame.mixer.Sound("../Music/Mario Kart Race Countdown - Sound Effect.mp3")
+    countdown_sound = pygame.mixer.Sound("Music/Mario Kart Race Countdown - Sound Effect.mp3")
     countdown_sound.play()
 
     quit_button = Button(window, "Quit", RED, WHITE, 10, 10, 100, 40)
+
+    car_sound = pygame.mixer.Sound("Music/car_sound.mp3")
+    car_sound_playing = False
 
     run = True
     while run:
@@ -111,6 +114,13 @@ def main():
         clock.tick(60)
 
         if not sentence_box.finished_typing:
+            wpm = ((sentence_box.char_index + 1) / 5) / (sentence_box.typing_time / 60)
+
+            if not countdown and not car_sound_playing:
+                car_sound.play(-1)
+                car_sound_playing = True
+
+            background.scrollSpeed = int(wpm * 100)
             background.scroll()
             background.draw()
 
@@ -119,6 +129,7 @@ def main():
             car.draw()
             sentence_box.draw()
         else:
+            car_sound.stop()
             window.blit(results_bg, (0, 0))
             results_page.draw()
 
