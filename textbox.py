@@ -22,6 +22,10 @@ class TextBox:
 
         self.highlight_color = CORRECT_CHAR
         self.char_index = 0
+        self.correct_chars = 0
+
+        self.typing_time = pygame.time.get_ticks()
+        self.finished_typing = False
 
     def draw(self):
         pygame.draw.rect(self.surface, self.bg_color, self.rect)
@@ -33,15 +37,19 @@ class TextBox:
         y = self.y + self.font_size
         for i, word in enumerate(sentence_list):
             word_label = self.font.render(word, True, self.font_color)
+            word_range = range(self.sentence.index(word), self.sentence.index(word) + len(word))
 
             if x + word_label.get_width() >= self.x + self.width:
                 y += self.font_size
                 x = self.x + self.font_size
 
+            highlighted = False
             for i_c, c in enumerate(word):
                 word_i = self.sentence.index(word) + i_c
-                if word_i == self.char_index and self.sentence[self.char_index] == c:
+                if word_i == self.char_index and self.sentence[self.char_index] == c and \
+                        self.char_index in word_range and not highlighted:
                     c_label = self.font.render(c, True, self.highlight_color)
+                    highlighted = True
                 else:
                     c_label = self.font.render(c, True, self.font_color)
 
@@ -61,9 +69,12 @@ class TextBox:
                     if self.char_index < len(self.sentence):
                         self.highlight_color = CORRECT_CHAR
                         self.char_index += 1
+                        self.correct_chars += 1
                 else:
                     self.highlight_color = WRONG_CHAR
             elif self.char_index == len(self.sentence) - 1:
                 self.char_index += 1
+                self.typing_time = (pygame.time.get_ticks() - self.typing_time) / 1000
+                self.finished_typing = True
         except ValueError:
             pass

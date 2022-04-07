@@ -6,6 +6,7 @@ pygame.init()
 from background import BackGround
 from textbox import TextBox
 from button import Button
+from results import Results
 
 WINDOW_SIZE = (1100, 550)
 window = pygame.display.set_mode(WINDOW_SIZE)
@@ -23,6 +24,8 @@ road = pygame.image.load("road.png")
 original_size = road.get_size()
 scale = WINDOW_SIZE[0]//original_size[0]
 road = pygame.transform.scale(road, (WINDOW_SIZE[0], original_size[1] * scale))
+
+results_bg = pygame.transform.scale(pygame.image.load("race_bg.png"), WINDOW_SIZE)
 
 # Car Image
 car_img = pygame.image.load("car.png")
@@ -63,16 +66,18 @@ def main():
 
     clock = pygame.time.Clock()
 
-    scrollSpeed = 0
-    background = BackGround(window, 0, WINDOW_SIZE[1]-road.get_height()+5, scrollSpeed, road)
+    background = BackGround(window, 0, WINDOW_SIZE[1]-road.get_height()+5, 0, road)
 
     with open("words.txt", "r") as f:
         content = f.readlines()
 
     num_words = random.randint(10, 50)
-    sentence = " ".join(random.sample(content, num_words)).replace("\n", "")
+    sentence = set(random.sample(content, num_words))
+    sentence = " ".join(sentence).replace("\n", "")
 
     sentence_box = TextBox(window, WHITE, TEXTBOX_BG, 300, 0, 500, 250, sentence, 20, WHITE)
+
+    results_page = Results(window, sentence_box, sentence, num_words, car_img)
 
     # time waited between each number in the countdown
     wait_time = 850
@@ -93,24 +98,29 @@ def main():
                 run = False
 
             if event.type == pygame.KEYDOWN:
-                if not countdown:
+                if not countdown and not sentence_box.finished_typing:
                     sentence_box.letter_typed(event.key)
 
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if quit_button.rect.collidepoint(event.pos):
+                if quit_button.rect.collidepoint(event.pos) or \
+                        results_page.menu_button.rect.collidepoint(event.pos):
                     countdown_sound.stop()
                     menu()
 
         window.fill(SKY_BLUE)
-        background.scroll()
-        background.draw()
-
         clock.tick(60)
 
-        quit_button.draw()
+        if not sentence_box.finished_typing:
+            background.scroll()
+            background.draw()
 
-        car.draw()
-        sentence_box.draw()
+            quit_button.draw()
+
+            car.draw()
+            sentence_box.draw()
+        else:
+            window.blit(results_bg, (0, 0))
+            results_page.draw()
 
         if countdown:
             if countdown_index == len(countdown_list) - 1:
@@ -123,6 +133,7 @@ def main():
                             (x, WINDOW_SIZE[1] // 2 - 50))
             else:
                 countdown = False
+                sentence_box.typing_time = pygame.time.get_ticks()
 
             now = pygame.time.get_ticks()
             if now - start >= wait_time:
@@ -135,7 +146,7 @@ def main():
 
 
 def menu():
-    play_button = Button(window, "Play!", RED, WHITE, 420, 430, 150, 60)
+    play_button = Button(window, "Play!", RED, WHITE, 440, 430, 150, 60)
 
     run = True
     while run:
