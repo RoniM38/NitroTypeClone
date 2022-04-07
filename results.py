@@ -9,14 +9,13 @@ stats_font = pygame.font.SysFont("Arial", 30, "bold")
 
 
 class Results:
-    def __init__(self, surface, sentence_box, sentence, num_words, car_img):
+    def __init__(self, surface, sentence_box, sentence, car_img):
         self.surface = surface
         self.sentence_box = sentence_box
         self.sentence = sentence
-        self.num_words = num_words
         self.car_img = pygame.transform.scale(car_img, (144, 68))
 
-        self.correct_chars = sentence_box.correct_chars
+        self.incorrect_chars = sentence_box.incorrect_chars
         self.typing_time = sentence_box.typing_time
 
         self.surface_size = surface.get_size()
@@ -24,7 +23,7 @@ class Results:
         self.menu_button = Button(surface, "menu", RED, WHITE, 10, 130, 200, 80)
 
     def draw(self):
-        self.correct_chars = self.sentence_box.correct_chars
+        self.incorrect_chars = self.sentence_box.incorrect_chars
         self.typing_time = self.sentence_box.typing_time
 
         self.menu_button.draw()
@@ -44,7 +43,7 @@ class Results:
         self.surface.blit(stats_font.render(f"{self.typing_time:.2f} secs", True, WHITE), (900, 285))
 
     def get_wpm(self):
-        return self.num_words / (self.typing_time / 60)
+        return (len(self.sentence) / 5) / (self.typing_time / 60)
 
     def get_accuracy(self):
-        return self.correct_chars / len(self.sentence) * 100
+        return ((len(self.sentence) - self.incorrect_chars) / len(self.sentence)) * 100

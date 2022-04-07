@@ -77,7 +77,7 @@ def main():
 
     sentence_box = TextBox(window, WHITE, TEXTBOX_BG, 300, 0, 500, 250, sentence, 20, WHITE)
 
-    results_page = Results(window, sentence_box, sentence, num_words, car_img)
+    results_page = Results(window, sentence_box, sentence, car_img)
 
     # time waited between each number in the countdown
     wait_time = 850

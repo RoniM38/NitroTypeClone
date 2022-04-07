@@ -22,7 +22,7 @@ class TextBox:
 
         self.highlight_color = CORRECT_CHAR
         self.char_index = 0
-        self.correct_chars = 0
+        self.incorrect_chars = 0
 
         self.typing_time = pygame.time.get_ticks()
         self.finished_typing = False
@@ -69,9 +69,9 @@ class TextBox:
                     if self.char_index < len(self.sentence):
                         self.highlight_color = CORRECT_CHAR
                         self.char_index += 1
-                        self.correct_chars += 1
                 else:
                     self.highlight_color = WRONG_CHAR
+                    self.incorrect_chars += 1
             elif self.char_index == len(self.sentence) - 1:
                 self.char_index += 1
                 self.typing_time = (pygame.time.get_ticks() - self.typing_time) / 1000
