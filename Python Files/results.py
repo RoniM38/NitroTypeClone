@@ -4,6 +4,7 @@ from button import Button
 GOLD = "#bec400"
 RED = "#f82a36"
 WHITE = (255, 255, 255)
+
 results_font = pygame.font.SysFont("Berlin Sans FB Demi", 80, "bold")
 stats_font = pygame.font.SysFont("Arial", 30, "bold")
 
@@ -20,9 +21,16 @@ class Results:
 
         self.surface_size = surface.get_size()
 
-        self.menu_button = Button(surface, "menu", RED, WHITE, 10, 130, 200, 80)
+        self.menu_button = Button(surface, "menu", RED, WHITE, 15, 130, 200, 80)
+
+        self.cheer_sound = pygame.mixer.Sound("Music/Cheer.wav")
+        self.sound_playing = False
 
     def draw(self):
+        if not self.sound_playing:
+            self.sound_playing = True
+            self.cheer_sound.play()
+
         self.incorrect_chars = self.sentence_box.incorrect_chars
         self.typing_time = self.sentence_box.typing_time
 

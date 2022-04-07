@@ -108,6 +108,7 @@ def main():
                 if quit_button.rect.collidepoint(event.pos) or \
                         results_page.menu_button.rect.collidepoint(event.pos):
                     countdown_sound.stop()
+                    results_page.cheer_sound.stop()
                     menu()
 
         window.fill(SKY_BLUE)
@@ -158,6 +159,8 @@ def main():
 
 def menu():
     play_button = Button(window, "Play!", RED, WHITE, 440, 430, 150, 60)
+    menu_music = pygame.mixer.Sound("Music/menu_music.wav")
+    menu_music.play(-1)
 
     run = True
     while run:
@@ -167,6 +170,7 @@ def menu():
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if play_button.rect.collidepoint(event.pos):
+                    menu_music.stop()
                     main()
 
         window.fill(MENU_BG)
