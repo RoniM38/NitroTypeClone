@@ -1,4 +1,5 @@
 import pygame
+import re
 
 CORRECT_CHAR = pygame.Color("dodgerblue2")
 WRONG_CHAR = "#ff4749"
@@ -17,6 +18,8 @@ class TextBox:
         self.font_size = font_size
         self.font_color = font_color
 
+        self.sentence_list = self.sentence.split()
+
         self.font = pygame.font.SysFont("Franklin Gothic Demi", self.font_size)
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
 
@@ -31,25 +34,22 @@ class TextBox:
         pygame.draw.rect(self.surface, self.bg_color, self.rect)
         pygame.draw.rect(self.surface, self.border_color, self.rect, 3)
 
-        sentence_list = self.sentence.split()
-
         x = self.x + self.font_size
         y = self.y + self.font_size
-        for i, word in enumerate(sentence_list):
+        for i, word in enumerate(self.sentence_list):
             word_label = self.font.render(word, True, self.font_color)
-            word_range = range(self.sentence.index(word), self.sentence.index(word) + len(word))
 
             if x + word_label.get_width() >= self.x + self.width:
                 y += self.font_size
                 x = self.x + self.font_size
 
-            highlighted = False
             for i_c, c in enumerate(word):
-                word_i = self.sentence.index(word) + i_c
-                if word_i == self.char_index and self.sentence[self.char_index] == c and \
-                        self.char_index in word_range and not highlighted:
+                a = re.search(r'\b({})\b'.format(word), self.sentence)
+                char_i = a.start() + i_c
+
+                if char_i == self.char_index and self.char_index in range(a.start(), a.end()) and \
+                        self.sentence[a.start():a.end()] == word:
                     c_label = self.font.render(c, True, self.highlight_color)
-                    highlighted = True
                 else:
                     c_label = self.font.render(c, True, self.font_color)
 
