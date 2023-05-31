@@ -33,7 +33,14 @@ car_img = pygame.image.load("Images/car.png")
 # game logo
 logo = pygame.image.load("Images/NitroTypeLogo.png")
 
+# mute and unmute images
+mute_img = pygame.transform.scale(pygame.image.load("Images/mute.png"), (50, 50))
+unmute_img = pygame.transform.scale(pygame.image.load("Images/unmute.png"), (50, 50))
+
 countdown_font = pygame.font.SysFont("Franklin Gothic Heavy", 150)
+
+mute_count = 0 # to check whether the music is muted or not
+mute_button = Button(window, "", WHITE, WHITE, 10, WINDOW_SIZE[1] - 60, 50, 50)
 
 
 class Car:
@@ -62,6 +69,7 @@ def quit_game():
 
 
 def main():
+    global mute_count
     car = Car(window, car_img, 390, 330)
 
     clock = pygame.time.Clock()
@@ -111,6 +119,9 @@ def main():
                     results_page.cheer_sound.stop()
                     menu()
 
+                if mute_button.rect.collidepoint(event.pos):
+                    mute_count += 1
+
         window.fill(SKY_BLUE)
         clock.tick(60)
 
@@ -152,12 +163,22 @@ def main():
                 countdown_index += 1
                 start = pygame.time.get_ticks()
 
+        if mute_count % 2 == 1:
+            countdown_sound.set_volume(0)
+            car_sound.set_volume(0)
+            window.blit(unmute_img, (10, WINDOW_SIZE[1] - 60))
+        else:
+            countdown_sound.set_volume(1)
+            car_sound.set_volume(1)
+            window.blit(mute_img, (10, WINDOW_SIZE[1] - 60))
+
         pygame.display.update()
 
     quit_game()
 
 
 def menu():
+    global mute_button, mute_count
     play_button = Button(window, "Play!", RED, WHITE, 440, 430, 150, 60)
     menu_music = pygame.mixer.Sound("Music/menu_music.wav")
     menu_music.play(-1)
@@ -173,9 +194,20 @@ def menu():
                     menu_music.stop()
                     main()
 
+                if mute_button.rect.collidepoint(event.pos):
+                    mute_count += 1
+
         window.fill(MENU_BG)
         window.blit(logo, (330, 20))
         play_button.draw()
+        mute_button.draw()
+
+        if mute_count % 2 == 1:
+            menu_music.set_volume(0)
+            window.blit(unmute_img, (10, WINDOW_SIZE[1] - 60))
+        else:
+            menu_music.set_volume(1)
+            window.blit(mute_img, (10, WINDOW_SIZE[1] - 60))
 
         pygame.display.update()
 
